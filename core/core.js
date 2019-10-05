@@ -1,4 +1,13 @@
 
+
+const _canvas = document.createElement('canvas');
+const _ctx = _canvas.getContext('2d');
+
+
+function isValidStyleKey(key) {
+  return key in _ctx;
+}
+
 /**
 *  @private
 *  @function
@@ -53,7 +62,21 @@ export default class ChaningCanvas {
 
   /*
   * @method
-  * @param styles Object (optional)
+  * @param style Object
+  */
+  static prepareStyle(style) {
+    for (let key in style) {
+      if (!isValidStyleKey(key)) {
+        console.warn(`Can't find ${key} is valid style key.`);
+      }
+    }
+
+    return style;
+  }
+
+  /*
+  * @method
+  * @param style Object (optional)
   */
   set(style) {
     return Object.assign(this, Object(style));
