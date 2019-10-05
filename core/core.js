@@ -55,19 +55,19 @@ export default class ChaningCanvas {
   * @method
   * @param styles Object (optional)
   */
-  set(styles) {
-    return Object.assign(this, Object(styles));
+  set(style) {
+    return Object.assign(this, Object(style));
   }
 
   /*
   * @method
-  * @param styles Object (optional)
+  * @param style Object (optional)
   * @param fn Function
   */
-  execute(styles, fn) {
+  execute(style, fn) {
     const ctx = this.ctx;
     ctx.save();
-    this.set(styles);
+    this.set(style);
     fn(this);
     ctx.restore();
     return this;
@@ -105,9 +105,9 @@ export default class ChaningCanvas {
   /*
   * @method
   * @param path Array<Array>
-  * @param styles Object (optional)
+  * @param style Object (optional)
   */
-  stroke(path, styles) {
+  stroke(path, style) {
     const ctx = this.ctx;
     const errMsg = "Failed to execute 'stroke':";
 
@@ -141,14 +141,14 @@ export default class ChaningCanvas {
       return Array.from(point);
     });
 
-    return this.execute(styles, () => {
+    return this.execute(style, () => {
       ctx.beginPath();
       ctx.moveTo(...path.shift());
       path.forEach(
         point => ctx.lineTo(...point)
       );
       ctx.stroke();
-      ctx.restore();
+      ctx.closePath();
     });
   }
 };
