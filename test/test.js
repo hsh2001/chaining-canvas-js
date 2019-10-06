@@ -5,11 +5,15 @@ import("../core/core.js").then(({
     id: 'display',
     width: 1000,
     height: 1000,
-  }).appendInto(
-    document.body
-  ).stroke([
+  })
+  .appendInto(document.body)
+  .fill('#000')
+  .set({ strokeStyle: '#fff', })
+  .stroke([
     [1,1],
     [255,200],
     [900,22],
   ]);
+
+  console.log(canvas.ctx.strokeStyle);
 });

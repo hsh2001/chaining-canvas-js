@@ -89,11 +89,11 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param parentNode
+  *  @param parentNode HTMLElement
   */
   appendInto(parentNode) {
     if (!isHTMLElement(parentNode)) {
-      throw new Error(
+      throw new TypeError(
         `Failed to execute 'appendInto': parameter 1 is not of type 'HTMLElement'.`
       );
     }
@@ -106,7 +106,8 @@ export default class ChaningCanvas {
   *  @param style Object (optional)
   */
   set(style) {
-    return Object.assign(this, Object(style));
+    Object.assign(this.ctx, Object(style));
+    return this;
   }
 
   /**
@@ -138,18 +139,19 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param [color="ctx.fillStyle"] String|CanvasGradient (optional)
+  *  @param [fillStyle="ctx.fillStyle"] String|CanvasGradient (optional)
   *  @param [width=elem.width] Integer (optional)
   *  @param [height=elem.height] Integer (optional)
   */
-  fill(color, width, height) {
+  fill(fillStyle, width, height) {
     const elem = this.element;
     const ctx = this.ctx;
-    ctx.fillStyle = color || ctx.fillStyle;
+    fillStyle = fillStyle || ctx.fillStyle;
     width = width || elem.width;
     height = height || elem.height;
-    ctx.fillRect(0, 0, width, height);
-    return this;
+    return this.execute({ fillStyle }, () => {
+      ctx.fillRect(0, 0, width, height);
+    });
   }
 
   /**
