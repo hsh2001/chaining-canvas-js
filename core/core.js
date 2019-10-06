@@ -3,7 +3,11 @@
 const _canvas = document.createElement('canvas');
 const _ctx = _canvas.getContext('2d');
 
-
+/**
+*  @private
+*  @function
+*  @param key String
+*/
 function isValidStyleKey(key) {
   return key in _ctx;
 }
@@ -32,6 +36,16 @@ function stringifyNumber(n) {
 }
 
 
+/**
+*  @private
+*  @function
+*  @param val
+*/
+function isHTMLElement(val) {
+  return val instanceof window.HTMLElement;
+}
+
+
 export default class ChaningCanvas {
   /*
   * @constructor
@@ -48,12 +62,11 @@ export default class ChaningCanvas {
   */
   static create(attr) {
     const canvas = document.createElement('canvas');
-    const defaultAttr = {
+    attr = {
+      // default values
       width: 300,
       height: 300,
-    };
-    attr = {
-      ...defaultAttr,
+      // values provided by the parameter.
       ...Object(attr),
     };
     Object.assign(canvas, attr);
@@ -72,6 +85,20 @@ export default class ChaningCanvas {
     }
 
     return style;
+  }
+
+  /**
+  * @method
+  * @param parentNode
+  */
+  appendInto(parentNode) {
+    if (!isHTMLElement(parentNode)) {
+      throw new Error(
+        `Failed to execute 'appendInto': parameter 1 is not of type 'HTMLElement'.`
+      );
+    }
+    parentNode.appendChild(this.element);
+    return this;
   }
 
   /*
