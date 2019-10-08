@@ -6,7 +6,7 @@ const _ctx = _canvas.getContext('2d');
 /**
 *  @private
 *  @function
-*  @param key String
+*  @param {String} key
 */
 function isValidStyleKey(key) {
   return key in _ctx;
@@ -15,7 +15,7 @@ function isValidStyleKey(key) {
 /**
 *  @private
 *  @function
-*  @param val
+*  @param {*} val
 */
 function isArrayLike(val) {
   return val != null && (
@@ -29,7 +29,7 @@ function isArrayLike(val) {
 /**
 *  @private
 *  @function
-*  @param n
+*  @param {*} n
 */
 function stringifyNumber(n) {
   return n + (['st', 'nd'][n % 10 - 1] || 'th');
@@ -39,7 +39,7 @@ function stringifyNumber(n) {
 /**
 *  @private
 *  @function
-*  @param val
+*  @param {*} val
 */
 function isHTMLElement(val) {
   return val instanceof window.HTMLElement;
@@ -49,7 +49,7 @@ function isHTMLElement(val) {
 export default class ChaningCanvas {
   /**
   *  @constructor
-  *  @param canvas HTMLCanvasElement
+  *  @param {HTMLCanvasElement} canvas
   */
   constructor(canvas) {
     this.element = canvas;
@@ -58,7 +58,7 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param attr Object (optional) will be assign to canvas object.
+  *  @param {Object} attr (optional) will be assign to canvas object.
   */
   static create(attr) {
     const canvas = document.createElement('canvas');
@@ -75,7 +75,7 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param style Object
+  *  @param {Object} style
   */
   static prepareStyle(style) {
     for (let key in style) {
@@ -89,7 +89,7 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param parentNode HTMLElement
+  *  @param {HTMLElement} parentNode
   */
   appendInto(parentNode) {
     if (!isHTMLElement(parentNode)) {
@@ -103,7 +103,7 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param style Object (optional)
+  *  @param {Object} style (optional)
   */
   set(style) {
     Object.assign(this.ctx, Object(style));
@@ -112,8 +112,8 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param style Object (optional)
-  *  @param fn Function
+  *  @param {Object} style (optional)
+  *  @param {Function} fn
   */
   execute(style, fn) {
     const ctx = this.ctx;
@@ -126,8 +126,8 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param [width=elem.width] Integer (optional)
-  *  @param [height=elem.height] Integer (optional)
+  *  @param {Integer} [width=elem.width] (optional)
+  *  @param {Integer} [height=elem.height] (optional)
   */
   clear(width, height) {
     const elem = this.element;
@@ -139,9 +139,9 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param [fillStyle="ctx.fillStyle"] String|CanvasGradient (optional)
-  *  @param [width=elem.width] Integer (optional)
-  *  @param [height=elem.height] Integer (optional)
+  *  @param {String|CanvasGradient} [fillStyle="ctx.fillStyle"] (optional)
+  *  @param {Integer} [width=elem.width] (optional)
+  *  @param {Integer} [height=elem.height] (optional)
   */
   fill(fillStyle, width, height) {
     const elem = this.element;
@@ -156,8 +156,8 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param path Array<Array>
-  *  @param style Object (optional)
+  *  @param {Array<Array>} path
+  *  @param {Object} style (optional)
   */
   stroke(path, style) {
     const ctx = this.ctx;
