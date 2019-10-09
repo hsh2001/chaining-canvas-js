@@ -1,10 +1,13 @@
 
-const ChaningCanvas = (function (global, document) {
+const ChaningCanvas = ((global, document) => {
 
 
-
+// define private canvas object.
 const _canvas = document.createElement('canvas');
 const _ctx = _canvas.getContext('2d');
+
+// define error message.
+const Failed_to_execute = "Failed to execute";
 
 /**
 *  @private
@@ -98,7 +101,7 @@ return class ChaningCanvas {
   appendInto(parentNode) {
     if (!isHTMLElement(parentNode)) {
       throw new TypeError(
-        `Failed to execute 'appendInto': parameter 1 is not of type 'HTMLElement'.`
+        `${Failed_to_execute} 'appendInto': parameter 1 is not of type 'HTMLElement'.`
       );
     }
     parentNode.appendChild(this.element);
@@ -155,7 +158,7 @@ return class ChaningCanvas {
   */
   addPath(...path) {
     const ctx = this.ctx;
-    const errMsg = "Failed to execute 'addPath':";
+    const errMsg = `${Failed_to_execute} 'addPath':`;
 
     path = path.map((point, i) => {
       // Check point.
@@ -214,7 +217,7 @@ return class ChaningCanvas {
   */
   stroke(style) {
     const ctx = this.ctx;
-    const errMsg = "Failed to execute 'stroke':";
+    const errMsg = `${Failed_to_execute} 'stroke':`;
 
     this.path.forEach((pathData, index) => {
       switch (pathData.type) {
