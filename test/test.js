@@ -5,12 +5,17 @@ const canvas = ChaningCanvas.create({
 })
 .appendInto(document.body)
 .fill('#000')
-.set({ strokeStyle: '#fff', })
+.set({
+  strokeStyle: '#fff',
+  lineWidth: 10,
+})
 .addPath(
-  [1,1],
+  [20,20],
   [255,200],
   [900,22],
+  [20,20],
 )
-.stroke();
+.stroke()
+.fill('blue');
 
 console.log(canvas.path);

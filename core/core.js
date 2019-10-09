@@ -12,10 +12,19 @@ const Failed_to_execute = "Failed to execute";
 /**
 *  @private
 *  @function
-*  @param {String} key
+*  @param {*} key
 */
 function isValidStyleKey(key) {
   return key in _ctx;
+}
+
+/**
+*  @private
+*  @function
+*  @param {*} val
+*/
+function isCanvasColor(val) {
+  return typeof val === "string" || val instanceof CanvasGradient;
 }
 
 /**
@@ -149,6 +158,7 @@ return class ChaningCanvas {
   */
   closePath() {
     this.ctx.closePath();
+    this.path.length = 0;
     return this;
   }
 
@@ -219,19 +229,36 @@ return class ChaningCanvas {
 
   /**
   *  @method
-  *  @param {String|CanvasGradient} [fillStyle="ctx.fillStyle"] (optional)
-  *  @param {Integer} [width=elem.width] (optional)
-  *  @param {Integer} [height=elem.height] (optional)
+  *  @param {String|CanvasGradient} fillStyle (optional)
+  *  @param {Integer} [sx=0] (optional)
+  *  @param {Integer} [sy=0] (optional)
+  *  @param {Integer} [ex=elem.width] (optional)
+  *  @param {Integer} [ey=elem.height] (optional)
   */
-  fill(fillStyle, width, height) {
+  fill(fillStyle, sx, sy, ex, ey) {
     const elem = this.element;
     const ctx = this.ctx;
-    fillStyle = fillStyle || ctx.fillStyle;
-    width = width || elem.width;
-    height = height || elem.height;
-    return this.execute({ fillStyle }, () => {
-      ctx.fillRect(0, 0, width, height);
-    });
+
+    fillStyle = isCanvasColor(fillStyle)
+                ? { fillStyle }
+                : { };
+console.log(arguments.length);
+    if (
+      [ 0, 1 ].includes(arguments.length)
+      && this.path.length
+    ) {
+      console.log(1);
+      return this
+              ._processPath(`${Failed_to_execute} 'fill':`)
+              .execute(fillStyle, () => ctx.fill() );
+    }
+
+    sx = sx || 0;
+    sy = sy || 0;
+    ex = ex == null? elem.width : ex;
+    ey = ey == null? elem.height : ey;
+
+    return this.execute( fillStyle, () => ctx.fillRect(sx, sy, ex, ey) );
   }
 
   /**
