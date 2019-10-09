@@ -1,4 +1,7 @@
 
+const ChaningCanvas = (function (global) {
+
+
 
 const _canvas = document.createElement('canvas');
 const _ctx = _canvas.getContext('2d');
@@ -46,7 +49,7 @@ function isHTMLElement(val) {
 }
 
 
-export default class ChaningCanvas {
+return class ChaningCanvas {
   /**
   *  @constructor
   *  @param {HTMLCanvasElement} canvas
@@ -230,3 +233,8 @@ export default class ChaningCanvas {
     return this.execute( style, () => ctx.stroke() );
   }
 };
+
+
+
+
+})(this);
