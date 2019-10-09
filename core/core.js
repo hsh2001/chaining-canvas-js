@@ -227,7 +227,7 @@ return class ChaningCanvas {
 
         default:
           this.path.length = 0;
-          throw new Error(
+          throw new TypeError(
             `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
           );
       }
