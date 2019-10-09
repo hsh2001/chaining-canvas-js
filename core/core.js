@@ -54,6 +54,7 @@ export default class ChaningCanvas {
   constructor(canvas) {
     this.element = canvas;
     this.ctx = canvas.getContext('2d');
+    this.path = [];
   }
 
   /**
@@ -139,29 +140,19 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param {String|CanvasGradient} [fillStyle="ctx.fillStyle"] (optional)
-  *  @param {Integer} [width=elem.width] (optional)
-  *  @param {Integer} [height=elem.height] (optional)
   */
-  fill(fillStyle, width, height) {
-    const elem = this.element;
-    const ctx = this.ctx;
-    fillStyle = fillStyle || ctx.fillStyle;
-    width = width || elem.width;
-    height = height || elem.height;
-    return this.execute({ fillStyle }, () => {
-      ctx.fillRect(0, 0, width, height);
-    });
+  closePath() {
+    this.ctx.closePath();
+    return this;
   }
 
   /**
   *  @method
   *  @param {Array<Array>} path
-  *  @param {Object} style (optional)
   */
-  stroke(path, style) {
+  addPath(path) {
     const ctx = this.ctx;
-    const errMsg = "Failed to execute 'stroke':";
+    const errMsg = "Failed to execute 'addPath':";
 
     // Check path.
     // If the path cannot be converted to an array, `Array.from` will throw an error.
@@ -193,14 +184,57 @@ export default class ChaningCanvas {
       return Array.from(point);
     });
 
-    return this.execute(style, () => {
-      ctx.beginPath();
-      ctx.moveTo(...path.shift());
-      path.forEach(
-        point => ctx.lineTo(...point)
-      );
-      ctx.stroke();
-      ctx.closePath();
+    this.path.push(
+      ...path.map(
+        point => ({
+          type: "point",
+          point,
+        })
+      )
+    );
+
+    return this;
+  }
+
+  /**
+  *  @method
+  *  @param {String|CanvasGradient} [fillStyle="ctx.fillStyle"] (optional)
+  *  @param {Integer} [width=elem.width] (optional)
+  *  @param {Integer} [height=elem.height] (optional)
+  */
+  fill(fillStyle, width, height) {
+    const elem = this.element;
+    const ctx = this.ctx;
+    fillStyle = fillStyle || ctx.fillStyle;
+    width = width || elem.width;
+    height = height || elem.height;
+    return this.execute({ fillStyle }, () => {
+      ctx.fillRect(0, 0, width, height);
     });
+  }
+
+  /**
+  *  @method
+  *  @param {Object} style (optional)
+  */
+  stroke(style) {
+    const ctx = this.ctx;
+    const errMsg = "Failed to execute 'stroke':";
+
+    this.path.forEach((pathData, index) => {
+      switch (pathData.type) {
+        case "point":
+          ctx[`${index? "line" : "move"}To`](...pathData.point);
+          break;
+
+        default:
+          this.path.length = 0;
+          throw new Error(
+            `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
+          );
+      }
+    });
+
+    return this.execute( style, () => ctx.stroke() );
   }
 };
