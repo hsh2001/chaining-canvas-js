@@ -195,6 +195,29 @@ return class ChaningCanvas {
   }
 
   /**
+  *  @private
+  *  @method
+  *  @param {String} errMsg
+  */
+  _processPath(errMsg) {
+    const ctx = this.ctx;
+    this.path.forEach((pathData, index) => {
+      switch (pathData.type) {
+        case "point":
+          ctx[`${index? "line" : "move"}To`](...pathData.point);
+          break;
+
+        default:
+          this.path.length = 0;
+          throw new TypeError(
+            `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
+          );
+      }
+    });
+    return this;
+  }
+
+  /**
   *  @method
   *  @param {String|CanvasGradient} [fillStyle="ctx.fillStyle"] (optional)
   *  @param {Integer} [width=elem.width] (optional)
@@ -216,24 +239,9 @@ return class ChaningCanvas {
   *  @param {Object} style (optional)
   */
   stroke(style) {
-    const ctx = this.ctx;
-    const errMsg = `${Failed_to_execute} 'stroke':`;
-
-    this.path.forEach((pathData, index) => {
-      switch (pathData.type) {
-        case "point":
-          ctx[`${index? "line" : "move"}To`](...pathData.point);
-          break;
-
-        default:
-          this.path.length = 0;
-          throw new TypeError(
-            `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
-          );
-      }
-    });
-
-    return this.execute( style, () => ctx.stroke() );
+    return this
+            ._processPath(`${Failed_to_execute} 'stroke':`)
+            .execute( style, thisVal => thisVal.ctx.stroke() );
   }
 };
 
