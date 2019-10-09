@@ -1,5 +1,5 @@
 
-const ChaningCanvas = (function (global) {
+const ChaningCanvas = (function (global, document) {
 
 
 
@@ -237,4 +237,4 @@ return class ChaningCanvas {
 
 
 
-})(this);
+})(this, document);
