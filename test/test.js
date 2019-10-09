@@ -9,11 +9,11 @@ import("../core/core.js").then(({
   .appendInto(document.body)
   .fill('#000')
   .set({ strokeStyle: '#fff', })
-  .addPath([
+  .addPath(
     [1,1],
     [255,200],
     [900,22],
-  ])
+  )
   .stroke();
 
   console.log(canvas.path);

@@ -148,21 +148,13 @@ export default class ChaningCanvas {
 
   /**
   *  @method
-  *  @param {Array<Array>} path
+  *  @param {...Array} path
   */
-  addPath(path) {
+  addPath(...path) {
     const ctx = this.ctx;
     const errMsg = "Failed to execute 'addPath':";
 
-    // Check path.
-    // If the path cannot be converted to an array, `Array.from` will throw an error.
-    if (!isArrayLike(path)) {
-      throw new TypeError(
-        `${errMsg} parameter 1 is not of type 'Array'.`
-      );
-    }
-
-    path = Array.from(path).map((point, i) => {
+    path = path.map((point, i) => {
       // Check point.
       // If the point cannot be converted to an array, `Array.from` will throw an error.
       if (!isArrayLike(point)) {
