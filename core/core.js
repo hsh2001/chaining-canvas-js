@@ -279,7 +279,7 @@ return class ChaningCanvas {
     let path = cb(pathMaker);
 
     if (!isArrayLike(path)) {
-      throw new Error(
+      throw new TypeError(
         `${errMsg} callback function must return value, which is type of Array.`
       );
     }
@@ -287,7 +287,7 @@ return class ChaningCanvas {
     path = Array.from(path).flat(Infinity);
     path.forEach((elem, i) => {
       if (!elem || !elem.type) {
-        throw new Error(
+        throw new TypeError(
           `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
         );
       }
