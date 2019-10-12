@@ -316,6 +316,17 @@ return class ChaningCanvas {
     return this;
   }
 
+
+  /**
+  *  @method
+  *  @param {Function} cb
+  */
+  setPath(cb) {
+    return this
+            .closePath()
+            .addPath(cb);
+  }
+
   /**
   *  @method
   *  @param {String|CanvasGradient} fillStyle (optional)

@@ -9,7 +9,7 @@ const canvas = ChaningCanvas.create({
   strokeStyle: '#fff',
   lineWidth: 10,
 })
-.addPath(
+.setPath(
   ({point, circle}) => [
     point(20,20),
     point(255,200),
