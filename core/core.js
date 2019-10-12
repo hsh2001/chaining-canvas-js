@@ -242,12 +242,11 @@ return class ChaningCanvas {
     fillStyle = isCanvasColor(fillStyle)
                 ? { fillStyle }
                 : { };
-console.log(arguments.length);
+
     if (
       [ 0, 1 ].includes(arguments.length)
       && this.path.length
     ) {
-      console.log(1);
       return this
               ._processPath(`${Failed_to_execute} 'fill':`)
               .execute(fillStyle, () => ctx.fill() );
