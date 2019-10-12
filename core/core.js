@@ -50,7 +50,6 @@ function stringifyNumber(n) {
   return n + (['st', 'nd'][n % 10 - 1] || 'th');
 }
 
-
 /**
 *  @private
 *  @function
@@ -58,6 +57,29 @@ function stringifyNumber(n) {
 */
 function isHTMLElement(val) {
   return val instanceof window.HTMLElement;
+}
+
+/**
+*  @private
+*  @method
+*  @param {String} errMsg
+*/
+function processPath(thisVal, errMsg) {
+  const ctx = thisVal.ctx;
+  thisVal.path.forEach((pathData, index) => {
+    switch (pathData.type) {
+      case "point":
+        ctx[`${index? "line" : "move"}To`](...pathData.point);
+        break;
+
+      default:
+        thisVal.path.length = 0;
+        throw new TypeError(
+          `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
+        );
+    }
+  });
+  return thisVal;
 }
 
 
@@ -205,29 +227,6 @@ return class ChaningCanvas {
   }
 
   /**
-  *  @private
-  *  @method
-  *  @param {String} errMsg
-  */
-  _processPath(errMsg) {
-    const ctx = this.ctx;
-    this.path.forEach((pathData, index) => {
-      switch (pathData.type) {
-        case "point":
-          ctx[`${index? "line" : "move"}To`](...pathData.point);
-          break;
-
-        default:
-          this.path.length = 0;
-          throw new TypeError(
-            `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
-          );
-      }
-    });
-    return this;
-  }
-
-  /**
   *  @method
   *  @param {String|CanvasGradient} fillStyle (optional)
   *  @param {Integer} [sx=0] (optional)
@@ -247,9 +246,11 @@ return class ChaningCanvas {
       [ 0, 1 ].includes(arguments.length)
       && this.path.length
     ) {
-      return this
-              ._processPath(`${Failed_to_execute} 'fill':`)
-              .execute(fillStyle, () => ctx.fill() );
+      return processPath(
+               this, `${Failed_to_execute} 'fill':`
+             ).execute(
+               fillStyle, () => ctx.fill()
+             );
     }
 
     sx = sx || 0;
@@ -257,7 +258,10 @@ return class ChaningCanvas {
     ex = ex == null? elem.width : ex;
     ey = ey == null? elem.height : ey;
 
-    return this.execute( fillStyle, () => ctx.fillRect(sx, sy, ex, ey) );
+    return this.execute(
+      fillStyle,
+      () => ctx.fillRect(sx, sy, ex, ey)
+    );
   }
 
   /**
@@ -265,9 +269,11 @@ return class ChaningCanvas {
   *  @param {Object} style (optional)
   */
   stroke(style) {
-    return this
-            ._processPath(`${Failed_to_execute} 'stroke':`)
-            .execute( style, thisVal => thisVal.ctx.stroke() );
+    return processPath(
+            this, `${Failed_to_execute} 'stroke':`
+          ).execute(
+            style, thisVal => thisVal.ctx.stroke()
+          );
   }
 };
 
