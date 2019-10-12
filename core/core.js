@@ -9,6 +9,35 @@ const _ctx = _canvas.getContext('2d');
 // define error message.
 const Failed_to_execute = "Failed to execute";
 
+//  define pathMaker.
+const pathMaker = {};
+
+//  define methods for pathMaker.
+[
+  ["moveTo", 2],
+  ["point", 2],
+  ["arc", 6],
+  ["bezierCurve", 6],
+  ["ellipse", 8],
+].forEach(([name, argLength]) => {
+  pathMaker[name] = function (...params) {
+    return {
+      type: name,
+      params: prepareParams(params, argLength),
+    };
+  };
+});
+
+pathMaker.lineTo = pathMaker.point;
+pathMaker.circle = function circle(x, y, r) {
+  params = prepareParams([x, y, r], 3);
+  params.push(0, 6.283185307/* 2 times PI */);
+  return [
+    pathMaker.moveTo(x + r, y),
+    pathMaker.arc(...params),
+  ];
+};
+
 /**
 *  @private
 *  @function
@@ -93,11 +122,11 @@ function processPath(thisVal, errMsg) {
   thisVal.path.forEach((pathData, index) => {
     switch (pathData.type) {
       case "moveTo":
-        ctx.moveTo(...pathData.point);
+        ctx.moveTo(...pathData.params);
         break;
 
       case "point":
-        ctx[`${index? "line" : "move"}To`](...pathData.point);
+        ctx[`${index? "line" : "move"}To`](...pathData.params);
         break;
 
       case "arc":
@@ -122,54 +151,6 @@ function processPath(thisVal, errMsg) {
   return thisVal;
 }
 
-
-const pathMaker = {
-  moveTo(...params) {
-    return {
-      type: "moveTo",
-      point: prepareParams(params, 2),
-    };
-  },
-
-  point(...params){
-    return {
-      type: "point",
-      point: prepareParams(params, 2),
-    };
-  },
-
-  arc(...params) {
-    return {
-      type: "arc",
-      params: prepareParams(params, 6),
-    };
-  },
-
-  circle(x, y, r) {
-    params = prepareParams([x, y, r], 3);
-    params.push(0, 6.283185307/* 2 times PI */);
-    return [
-      pathMaker.moveTo(x + r, y),
-      pathMaker.arc(...params),
-    ];
-  },
-
-  bezierCurve(...params) {
-    return {
-      type: "bezierCurve",
-      params: prepareParams(params, 6),
-    };
-  },
-
-  ellipse(...params) {
-    return {
-      type: "ellipse",
-      params: prepareParams(params, 8),
-    };
-  },
-};
-
-pathMaker.lineTo = pathMaker.point;
 
 return class ChaningCanvas {
   /**
@@ -315,7 +296,6 @@ return class ChaningCanvas {
     this.path.push(...path);
     return this;
   }
-
 
   /**
   *  @method
