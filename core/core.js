@@ -23,7 +23,7 @@ function isValidStyleKey(key) {
 *  @function
 */
 function numberOrZero(n) {
-  return Number(n) || 0;
+  return +n || 0;
 }
 
 /**
@@ -145,11 +145,11 @@ const pathMaker = {
     };
   },
 
-  circle(...params) {
-    params = prepareParams(params, 3);
+  circle(x, y, r) {
+    params = prepareParams([x, y, r], 3);
     params.push(0, 6.283185307/* 2 times PI */);
     return [
-      pathMaker.moveTo(...params),
+      pathMaker.moveTo(x + r, y),
       pathMaker.arc(...params),
     ];
   },

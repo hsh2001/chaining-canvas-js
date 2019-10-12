@@ -15,7 +15,7 @@ const canvas = ChaningCanvas.create({
     point(255,200),
     point(900,22),
     point(20,20),
-    circle(500, 500, 30),
+    circle(500, 500, 90),
   ]
 )
 .stroke()
