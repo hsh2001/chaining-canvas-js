@@ -10,10 +10,13 @@ const canvas = ChaningCanvas.create({
   lineWidth: 10,
 })
 .addPath(
-  [20,20],
-  [255,200],
-  [900,22],
-  [20,20],
+  ({point, circle}) => [
+    point(20,20),
+    point(255,200),
+    point(900,22),
+    point(20,20),
+    circle(500, 500, 30),
+  ]
 )
 .stroke()
 .fill('blue');

@@ -21,6 +21,30 @@ function isValidStyleKey(key) {
 /**
 *  @private
 *  @function
+*/
+function numberOrZero(n) {
+  return Number(n) || 0;
+}
+
+/**
+*  @private
+*  @function
+*  @param {Array} params
+*  @param {Integer} minLength
+*  @param {Function} [mappingFn=numberOrZero]
+*/
+function prepareParams(params, minLength, mappingFn) {
+  return params
+          .concat(
+            Array(minLength).fill()
+          )
+          .slice(0, minLength)
+          .map(mappingFn || numberOrZero);
+}
+
+/**
+*  @private
+*  @function
 *  @param {*} val
 */
 function isCanvasColor(val) {
@@ -68,8 +92,16 @@ function processPath(thisVal, errMsg) {
   const ctx = thisVal.ctx;
   thisVal.path.forEach((pathData, index) => {
     switch (pathData.type) {
+      case "moveTo":
+        ctx.moveTo(...pathData.point);
+        break;
+
       case "point":
         ctx[`${index? "line" : "move"}To`](...pathData.point);
+        break;
+
+      case "arc":
+        ctx.arc(...pathData.params);
         break;
 
       default:
@@ -82,6 +114,40 @@ function processPath(thisVal, errMsg) {
   return thisVal;
 }
 
+
+const pathMaker = {
+  moveTo(...params) {
+    return {
+      type: "moveTo",
+      point: prepareParams(params, 2),
+    };
+  },
+
+  point(...params){
+    return {
+      type: "point",
+      point: prepareParams(params, 2),
+    };
+  },
+
+  arc(...params) {
+    return {
+      type: "arc",
+      params: prepareParams(params, 6),
+    };
+  },
+
+  circle(...params) {
+    params = prepareParams(params, 3);
+    params.push(0, 6.283185307/* 2 times PI */);
+    return [
+      pathMaker.moveTo(...params),
+      pathMaker.arc(...params),
+    ];
+  },
+};
+
+pathMaker.lineTo = pathMaker.point;
 
 return class ChaningCanvas {
   /**
@@ -186,43 +252,29 @@ return class ChaningCanvas {
 
   /**
   *  @method
-  *  @param {...Array} path
+  *  @param {Function} cb
   */
-  addPath(...path) {
+  addPath(cb) {
     const ctx = this.ctx;
     const errMsg = `${Failed_to_execute} 'addPath':`;
+    let path = cb(pathMaker);
 
-    path = path.map((point, i) => {
-      // Check point.
-      // If the point cannot be converted to an array, `Array.from` will throw an error.
-      if (!isArrayLike(point)) {
-        throw new TypeError(
-          `${errMsg} ${stringifyNumber(i)} element of path is not of type 'Array'.`
+    if (!isArrayLike(path)) {
+      throw new Error(
+        `${errMsg} callback function must return value, which is type of Array.`
+      );
+    }
+
+    path = Array.from(path).flat(Infinity);
+    path.forEach((elem, i) => {
+      if (!elem || !elem.type) {
+        throw new Error(
+          `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
         );
       }
-
-      point = Array.from(point);
-
-      // potint array: [X, Y]
-      // so, length is 2.
-      if (point.length < 2) {
-        throw new TypeError(
-          `${errMsg} 2 element required, but only ${point.length} included in ${stringifyNumber(i)} element of path.`
-        );
-      }
-
-      return Array.from(point);
     });
 
-    this.path.push(
-      ...path.map(
-        point => ({
-          type: "point",
-          point,
-        })
-      )
-    );
-
+    this.path.push(...path);
     return this;
   }
 
