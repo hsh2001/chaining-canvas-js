@@ -229,6 +229,22 @@ return class ChaningCanvas {
 
   /**
   *  @method
+  *  @param {String} format (optional)
+  *  @return {Promise} resolve image object when process is done.
+  */
+  toImg(...p) { return this.toImage(...p); }
+  toImage(format) {
+    const element = this.element;
+    const img = new Image;
+    return new Promise((resolve, reject) => {
+      img.src = element.toDataURL(format);
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+    });
+  }
+
+  /**
+  *  @method
   *  @param {Object} style (optional)
   */
   set(style) {

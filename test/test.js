@@ -21,4 +21,8 @@ const canvas = ChaningCanvas.create({
 .stroke()
 .fill('blue');
 
+canvas
+  .toImage()
+  .then(img => console.log(img.src));
+
 console.log(canvas.path);
