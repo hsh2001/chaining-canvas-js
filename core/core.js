@@ -104,6 +104,14 @@ function processPath(thisVal, errMsg) {
         ctx.arc(...pathData.params);
         break;
 
+      case "bezierCurve":
+        ctx.bezierCurveTo(...pathData.params);
+        break;
+
+      case "ellipse":
+        ctx.ellipse(...pathData.params);
+        break;
+
       default:
         thisVal.path.length = 0;
         throw new TypeError(
@@ -144,6 +152,20 @@ const pathMaker = {
       pathMaker.moveTo(...params),
       pathMaker.arc(...params),
     ];
+  },
+
+  bezierCurve(...params) {
+    return {
+      type: "bezierCurve",
+      params: prepareParams(params, 6),
+    };
+  },
+
+  ellipse(...params) {
+    return {
+      type: "ellipse",
+      params: prepareParams(params, 8),
+    };
   },
 };
 
