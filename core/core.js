@@ -344,7 +344,9 @@ return class ChaningCanvas {
     let path;
 
     if (typeof cb !== "function") {
-      getTypeErrorMsg(errMsg, 1, "Function");
+      throw new TypeError(
+        getTypeErrorMsg(errMsg, 1, "Function")
+      );
     }
 
     path = cb(pathMaker);
