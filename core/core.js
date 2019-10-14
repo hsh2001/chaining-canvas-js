@@ -265,6 +265,42 @@ return class ChaningCanvas {
 
   /**
   *  @method
+  *  @param {Integer} [x=0] (optional)
+  *  @param {Integer} [y=0] (optional)
+  *  @param {Integer} [width=0] (optional)
+  *  @param {Integer} [height=0] (optional)
+  *  @return {Uint8ClampedArray} Image data.
+  */
+  getImgData(...p) { return this.getImageData(...p); }
+  getImageData(x, y, width, height) {
+    const params = [
+      x, y, width, height,
+    ].map(a => numberOrZero(a));
+    return this.ctx.getImageData(...params).data;
+  }
+
+  /**
+  *  @method
+  *  @param {Integer} [x=0] (optional)
+  *  @param {Integer} [y=0] (optional)
+  *  @return {Object} Pixel data.
+  */
+  getPixelData(...p) { return this.getPixel(...p); }
+  getPixel(x, y) {
+    const [
+      r, g, b, a
+    ] = this
+        .ctx
+        .getImageData(
+          ...[x, y].map(a => numberOrZero(a)),
+          1, 1,
+        )
+        .data;
+    return { r, g, b, a, };
+  }
+
+  /**
+  *  @method
   *  @param {Object} style (optional)
   */
   set(style) {
