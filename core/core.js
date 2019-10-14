@@ -12,6 +12,7 @@ const Failed_to_execute = "Failed to execute";
 //  define pathMaker.
 const pathMaker = {};
 
+//  define image object constructor list.
 const imgConstructorList = [
   "Image",
   "CSSImageValue",
@@ -137,6 +138,17 @@ function isHTMLElement(val) {
 
 /**
 *  @private
+*  @function
+*  @param {String} errMsg
+*  @param {Integer} paramIndex
+*  @param {String} typeName
+*/
+function getTypeErrorMsg(errMsg, paramIndex, typeName) {
+  return `${errMsg} parameter ${paramIndex} is not of type '${typeName}'.`;
+}
+
+/**
+*  @private
 *  @method
 *  @param {String} errMsg
 */
@@ -224,7 +236,11 @@ return class ChaningCanvas {
   appendInto(parentNode) {
     if (!isHTMLElement(parentNode)) {
       throw new TypeError(
-        `${Failed_to_execute} 'appendInto': parameter 1 is not of type 'HTMLElement'.`
+        getTypeErrorMsg(
+          `${Failed_to_execute} 'appendInto':`,
+          1,
+          "HTMLElement",
+        )
       );
     }
     parentNode.appendChild(this.element);
@@ -284,7 +300,7 @@ return class ChaningCanvas {
     if (!isImage(img)) {
       const constList = imgConstructorList.join(' or ');
       throw new TypeError(
-        `${errMsg} The provided value is not of type '(${constList})'`
+        getTypeErrorMsg(errMsg, 1, constList)
       );
     }
 
