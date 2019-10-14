@@ -341,7 +341,13 @@ return class ChaningCanvas {
   addPath(cb) {
     const ctx = this.ctx;
     const errMsg = `${Failed_to_execute} 'addPath':`;
-    let path = cb(pathMaker);
+    let path;
+
+    if (typeof cb !== "function") {
+      getTypeErrorMsg(errMsg, 1, "Function");
+    }
+
+    path = cb(pathMaker);
 
     if (!isArrayLike(path)) {
       throw new TypeError(
