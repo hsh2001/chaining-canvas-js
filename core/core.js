@@ -327,6 +327,7 @@ return class ChaningCanvas {
   /**
   *  @method
   */
+  resetPath(...p) { return this.closePath(...p); }
   closePath() {
     this.ctx.closePath();
     this.path.length = 0;
