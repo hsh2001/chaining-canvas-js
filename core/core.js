@@ -1,5 +1,5 @@
 
-const ChaningCanvas = ((global, document) => {
+const ChaningCanvas = ((window, document, Array) => {
 
 
 // define private canvas object.
@@ -8,9 +8,6 @@ const _ctx = _canvas.getContext('2d');
 
 // define error message.
 const Failed_to_execute = "Failed to execute";
-
-//  define pathMaker.
-const pathMaker = {};
 
 //  define image object constructor list.
 const imgConstructorList = [
@@ -24,14 +21,19 @@ const imgConstructorList = [
   "OffscreenCanvas",
 ];
 
-//  define methods for pathMaker.
-[
+//  define pathMaker.
+const pathMaker = {};
+const pathMakerList = [
   ["moveTo", 2],
   ["point", 2],
   ["arc", 6],
-  ["bezierCurve", 6],
+  ["bezierCurveTo", 6],
   ["ellipse", 8],
-].forEach(([name, argLength]) => {
+];
+
+//  define methods for pathMaker.
+pathMakerList
+.forEach(([name, argLength]) => {
   pathMaker[name] = function (...params) {
     return {
       type: name,
@@ -155,25 +157,16 @@ function getTypeErrorMsg(errMsg, paramIndex, typeName) {
 function processPath(thisVal, errMsg) {
   const ctx = thisVal.ctx;
   thisVal.path.forEach((pathData, index) => {
-    switch (pathData.type) {
-      case "moveTo":
-        ctx.moveTo(...pathData.params);
-        break;
-
+    const type = pathData.type;
+    for (let i = 0; i < pathMakerList.length; i++) {
+      const name = pathMakerList[i][0];
+      if (type === name && ctx[type]) {
+        return ctx[type](...pathData.params);
+      }
+    }
+    switch (type) {
       case "point":
         ctx[`${index? "line" : "move"}To`](...pathData.params);
-        break;
-
-      case "arc":
-        ctx.arc(...pathData.params);
-        break;
-
-      case "bezierCurve":
-        ctx.bezierCurveTo(...pathData.params);
-        break;
-
-      case "ellipse":
-        ctx.ellipse(...pathData.params);
         break;
 
       default:
@@ -470,4 +463,4 @@ return class ChaningCanvas {
 
 
 
-})(this, document);
+})(this, document, Array);
