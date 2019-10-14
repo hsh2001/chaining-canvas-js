@@ -46,6 +46,7 @@ pathMaker.lineTo = pathMaker.point;
 pathMaker.circle = function circle(x, y, r) {
   params = prepareParams([x, y, r], 3);
   params.push(0, 6.283185307/* 2 times PI */);
+  [ x, y, r, ] = params;
   return [
     pathMaker.moveTo(x + r, y),
     pathMaker.arc(...params),
