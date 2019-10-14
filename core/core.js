@@ -12,6 +12,17 @@ const Failed_to_execute = "Failed to execute";
 //  define pathMaker.
 const pathMaker = {};
 
+const imgConstructorList = [
+  "Image",
+  "CSSImageValue",
+  "HTMLImageElement",
+  "SVGImageElement",
+  "HTMLVideoElement",
+  "HTMLCanvasElement",
+  "ImageBitmap",
+  "OffscreenCanvas",
+];
+
 //  define methods for pathMaker.
 [
   ["moveTo", 2],
@@ -78,6 +89,18 @@ function prepareParams(params, minLength, mappingFn) {
 */
 function isCanvasColor(val) {
   return typeof val === "string" || val instanceof CanvasGradient;
+}
+
+/**
+*  @private
+*  @function
+*  @param {*} val
+*/
+function isImage(val) {
+  return val
+         && imgConstructorList.some(
+           key => val instanceof window[key]
+         );
 }
 
 /**
@@ -244,6 +267,31 @@ return class ChaningCanvas {
     this.set(style);
     fn(this);
     ctx.restore();
+    return this;
+  }
+
+  /**
+  *  @method
+  *  @param {Image|CSSImageValue|HTMLImageElement|SVGImageElement|HTMLVideoElement|HTMLCanvasElement|ImageBitmap|OffscreenCanvas} img
+  *  @param {Integer} x
+  *  @param {Integer} y
+  *  @param {...Integer} params
+  */
+  drawImg(...p) { return this.drawImage(...p); }
+  drawImage(img, x, y, ...params) {
+    const errMsg = `${Failed_to_execute} 'drawImage':`;
+
+    if (!isImage(img)) {
+      const constList = imgConstructorList.join(' or ');
+      throw new TypeError(
+        `${errMsg} The provided value is not of type '(${constList})'`
+      );
+    }
+
+    x = +x || 0;
+    y = +y || 0;
+    this.ctx.drawImage(img, x, y, ...params);
+
     return this;
   }
 

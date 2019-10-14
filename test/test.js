@@ -22,7 +22,13 @@ const canvas = ChaningCanvas.create({
 .fill('blue');
 
 canvas
-  .toImage()
-  .then(img => console.log(img.src));
+.toImage()
+.then(img => {
+  for (let i = 1; i < 10; i++) {
+    setTimeout(() => {
+      canvas.drawImg(img, 100 * i, 100 * i);
+    }, i * 100);
+  }
+});
 
-console.log(canvas.path);
+console.log(canvas);
