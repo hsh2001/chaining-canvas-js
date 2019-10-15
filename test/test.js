@@ -19,11 +19,8 @@ const canvas = ChaningCanvas.create({
   ]
 )
 .stroke()
-.fill('blue');
-
-canvas
-.toImage()
-.then(img => {
+.fill('blue')
+.toImage(null, (img, err) => {
   for (let i = 1; i < 10; i++) {
     setTimeout(() => {
       canvas.drawImg(img, 100 * i, 100 * i);

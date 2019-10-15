@@ -244,17 +244,27 @@ return class ChaningCanvas {
   /**
   *  @method
   *  @param {String} format (optional)
-  *  @return {Promise} resolve image object when process is done.
+  *  @param {Function} cb (optional)
+  *  @return {Promise} (When cb is not a function) resolve image object when process is done.
   */
   toImg(...p) { return this.toImage(...p); }
-  toImage(format) {
+  toImage(format, cb) {
     const element = this.element;
     const img = new Image;
-    return new Promise((resolve, reject) => {
-      img.src = element.toDataURL(format);
+    const promise = new Promise((resolve, reject) => {
+      img.src = element.toDataURL(format || "image/png");
       img.onload = () => resolve(img);
       img.onerror = reject;
     });
+
+    if (typeof cb === "function") {
+      promise
+      .then(img => cb(img, null))
+      .catch(err => cb(null, err));
+      return this;
+    }
+
+    return promise;
   }
 
   /**
