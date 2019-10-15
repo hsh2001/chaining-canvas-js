@@ -39,7 +39,7 @@ const imgConstructorList = [
 *      @callback PathPoint
 *      @param {Integer} [x=0]
 *      @param {Integer} [y=0]
-*    @param {} pathMaker.arc
+*    @param {PathArc} pathMaker.arc
 *      @callback PathArc
 *      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc
 *      @param {Integer} [x=0]
@@ -48,12 +48,12 @@ const imgConstructorList = [
 *      @param {Float} [sAngle=0]
 *      @param {Float} [eAngle=0]
 *      @param {Boolean} [counterclockwise=false]
-*    @param {} pathMaker.circle
+*    @param {PathCircle} pathMaker.circle
 *      @callback PathCircle
 *      @param {Integer} [x=0]
 *      @param {Integer} [y=0]
 *      @param {Integer} [r=0]
-*    @param {} pathMaker.bezierCurveTo
+*    @param {PathBezierCurveTo} pathMaker.bezierCurveTo
 *      @callback PathBezierCurveTo
 *      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/bezierCurveTo
 *      @param {Integer} [cp1x=0]
@@ -62,7 +62,7 @@ const imgConstructorList = [
 *      @param {Integer} [cp2y=0]
 *      @param {Integer} [x=0]
 *      @param {Integer} [y=0]
-*    @param {} pathMaker.ellipse
+*    @param {PathEllipse} pathMaker.ellipse
 *      @callback PathEllipse
 *      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/ellipse
 *      @param {Integer} [x=0]
