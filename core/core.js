@@ -436,6 +436,17 @@ return class ChaningCanvas {
   /**
   *  @method
   *  @param {PathGenerator} cb
+  *  @example
+  *    canvas.setPath(
+  *      ({point, circle}) => [
+  *        point(20,20),
+  *        point(255,200),
+  *        point(900,22),
+  *        point(20,20),
+  *        circle(500, 500, 90),
+  *      ]
+  *    )
+  *    .stroke()
   */
   addPath(cb) {
     const ctx = this.ctx;
