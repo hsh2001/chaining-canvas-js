@@ -2,6 +2,8 @@
 const ChaningCanvas = ((window, document, Array) => {
 
 
+const PI2 = Math.PI * 2;
+
 // define private canvas object.
 const _canvas = document.createElement('canvas');
 const _ctx = _canvas.getContext('2d');
@@ -44,12 +46,10 @@ pathMakerList
 
 pathMaker.lineTo = pathMaker.point;
 pathMaker.circle = function circle(x, y, r) {
-  params = prepareParams([x, y, r], 3);
-  params.push(0, 6.283185307/* 2 times PI */);
-  [ x, y, r, ] = params;
+  [ x, y, r ] = [ x, y, r ].map(numberOrZero);
   return [
     pathMaker.moveTo(x + r, y),
-    pathMaker.arc(...params),
+    pathMaker.arc(x, y, r, 0, PI2),
   ];
 };
 
@@ -279,7 +279,7 @@ return class ChaningCanvas {
   getImageData(x, y, width, height) {
     const params = [
       x, y, width, height,
-    ].map(a => numberOrZero(a));
+    ].map(numberOrZero);
     return this.ctx.getImageData(...params).data;
   }
 
@@ -296,7 +296,7 @@ return class ChaningCanvas {
     ] = this
         .ctx
         .getImageData(
-          ...[x, y].map(a => numberOrZero(a)),
+          ...[x, y].map(numberOrZero),
           1, 1,
         )
         .data;
