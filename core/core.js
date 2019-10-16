@@ -375,8 +375,49 @@ return class ChaningCanvas {
   *  @param {Object} style (optional)
   */
   set(style) {
-    Object.assign(this.ctx, Object(style));
+    //  deep-copy style object.
+    style = { ...Object(style) };
+
+    [
+      'lineDash',
+      'transform',
+    ].forEach(key => {
+      if (key in style) {
+        this[key] = style[key];
+        delete style[key];
+      }
+    });
+
+    Object.assign(this.ctx, style);
     return this;
+  }
+
+  /**
+  *  @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash
+  */
+  set lineDash(segments) {
+    return this.ctx.setLineDash(segments);
+  }
+
+  get lineDash() {
+    return this.ctx.getLineDash();
+  }
+
+  /**
+  *  @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform
+  */
+  set transform(val) {
+    return this.ctx.setTransform(
+      ...(
+        isArrayLike(val)
+        ? Array.from(val)
+        : [val]
+      )
+    );
+  }
+
+  get transform() {
+    return this.ctx.getTransform();
   }
 
   /**
