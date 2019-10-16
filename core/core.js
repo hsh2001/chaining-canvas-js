@@ -1,8 +1,8 @@
 
 const ChaningCanvas = ((window, document, Array) => {
 
-
-const PI2 = Math.PI * 2;
+const PI  = Math.PI;
+const PI2 = PI * 2;
 
 // define private canvas object.
 const _canvas = document.createElement('canvas');
@@ -53,6 +53,13 @@ const imgConstructorList = [
 *      @param {Integer} [x=0]
 *      @param {Integer} [y=0]
 *      @param {Integer} [r=0]
+*    @param {PathQuadraticCurveTo} pathMaker.quadraticCurveTo
+*      @callback PathQuadraticCurveTo
+*      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/quadraticCurveTo
+*      @param {Integer} [cpx=0]
+*      @param {Integer} [cpy=0]
+*      @param {Integer} [x=0]
+*      @param {Integer} [y=0]
 *    @param {PathBezierCurveTo} pathMaker.bezierCurveTo
 *      @callback PathBezierCurveTo
 *      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/bezierCurveTo
@@ -80,6 +87,7 @@ const pathMakerList = [
   ["point", 2],
   ["arc", 6],
   ["bezierCurveTo", 6],
+  ["quadraticCurveTo", 4],
   ["ellipse", 8],
 ];
 
@@ -101,6 +109,10 @@ pathMaker.circle = function circle(x, y, r) {
     pathMaker.moveTo(x + r, y),
     pathMaker.arc(x, y, r, 0, PI2),
   ];
+};
+
+pathMaker.deg = function (t) {
+  return 180 * t / PI;
 };
 
 /**
