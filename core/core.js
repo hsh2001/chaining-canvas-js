@@ -487,6 +487,14 @@ return class ChaningCanvas {
   }
 
   /**
+  *  @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clip
+  */
+  clip(...p) {
+    this.ctx.clip(...p);
+    return this;
+  }
+
+  /**
   *  @method
   */
   resetPath(...p) { return this.closePath(...p); }
