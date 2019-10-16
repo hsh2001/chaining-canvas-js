@@ -94,16 +94,14 @@ const pathMakerList = [
 //  define methods for pathMaker.
 pathMakerList
 .forEach(([name, argLength]) => {
-  pathMaker[name] = function (...params) {
-    return {
-      type: name,
-      params: prepareParams(params, argLength),
-    };
-  };
+  pathMaker[name] = (...params) => ({
+    type: name,
+    params: prepareParams(params, argLength),
+  });
 });
 
 pathMaker.lineTo = pathMaker.point;
-pathMaker.circle = function circle(x, y, r) {
+pathMaker.circle = (x, y, r) => {
   [ x, y, r ] = [ x, y, r ].map(numberOrZero);
   return [
     pathMaker.moveTo(x + r, y),
@@ -111,26 +109,20 @@ pathMaker.circle = function circle(x, y, r) {
   ];
 };
 
-pathMaker.deg = function (t) {
-  return 180 * t / PI;
-};
+pathMaker.deg = t => 180 * t / PI;
 
 /**
 *  @private
 *  @function
 *  @param {*} key
 */
-function isValidStyleKey(key) {
-  return key in _ctx;
-}
+const isValidStyleKey = key => key in _ctx;
 
 /**
 *  @private
 *  @function
 */
-function numberOrZero(n) {
-  return +n || 0;
-}
+const numberOrZero = n => (+n || 0);
 
 /**
 *  @private
@@ -139,67 +131,71 @@ function numberOrZero(n) {
 *  @param {Integer} minLength
 *  @param {Function} [mappingFn=numberOrZero]
 */
-function prepareParams(params, minLength, mappingFn) {
-  return params
-          .concat(
-            Array(minLength).fill()
-          )
-          .slice(0, minLength)
-          .map(mappingFn || numberOrZero);
-}
+const prepareParams = (
+  params, minLength, mappingFn
+) => (
+  params
+   .concat(
+     Array(minLength).fill()
+   )
+   .slice(0, minLength)
+   .map(mappingFn || numberOrZero)
+);
 
 /**
 *  @private
 *  @function
 *  @param {*} val
 */
-function isCanvasColor(val) {
-  return typeof val === "string" || val instanceof CanvasGradient;
-}
+const isCanvasColor = val => (
+  typeof val === "string"
+  || val instanceof CanvasGradient
+);
 
 /**
 *  @private
 *  @function
 *  @param {*} val
 */
-function isImage(val) {
-  return val
-         && imgConstructorList.some(
-           key => val instanceof window[key]
-         );
-}
+const isImage = val => (
+  val
+  && imgConstructorList.some(
+    key => val instanceof window[key]
+  )
+);
 
 /**
 *  @private
 *  @function
 *  @param {*} val
 */
-function isArrayLike(val) {
-  return val != null && (
+const isArrayLike = val => (
+  val
+  && (
     Array.isArray(val) || (
       typeof val.length === 'number' &&
       val.length > -1
     )
-  );
-}
+  )
+);
 
 /**
 *  @private
 *  @function
 *  @param {*} n
 */
-function stringifyNumber(n) {
-  return n + (['st', 'nd'][n % 10 - 1] || 'th');
-}
+const stringifyNumber = n => (
+  n + (['st', 'nd'][n % 10 - 1] || 'th')
+);
 
 /**
 *  @private
 *  @function
 *  @param {*} val
 */
-function isHTMLElement(val) {
-  return val instanceof window.HTMLElement;
-}
+const isHTMLElement = val => (
+  val instanceof window.HTMLElement
+);
 
 /**
 *  @private
@@ -208,16 +204,16 @@ function isHTMLElement(val) {
 *  @param {Integer} paramIndex
 *  @param {String} typeName
 */
-function getTypeErrorMsg(errMsg, paramIndex, typeName) {
-  return `${errMsg} parameter ${paramIndex} is not of type '${typeName}'.`;
-}
+const getTypeErrorMsg = (errMsg, paramIndex, typeName) => (
+  `${errMsg} parameter ${paramIndex} is not of type '${typeName}'.`
+);
 
 /**
 *  @private
 *  @method
 *  @param {String} errMsg
 */
-function processPath(thisVal, errMsg) {
+const processPath = (thisVal, errMsg) => {
   const ctx = thisVal.ctx;
   thisVal.path.forEach((pathData, index) => {
     const type = pathData.type;
