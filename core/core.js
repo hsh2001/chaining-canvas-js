@@ -377,6 +377,7 @@ return class ChaningCanvas {
     [
       'lineDash',
       'transform',
+      'scale',
     ].forEach(key => {
       if (key in style) {
         this[key] = style[key];
@@ -414,6 +415,19 @@ return class ChaningCanvas {
 
   get transform() {
     return this.ctx.getTransform();
+  }
+
+  /**
+  *  @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform
+  */
+  set scale([x, y]) {
+    this._scale = [x, y];
+    this.ctx.scale(x, y);
+    return [x, y];
+  }
+
+  get scale() {
+    return this._scale || [1,1];
   }
 
   /**
