@@ -235,6 +235,7 @@ const processPath = (thisVal, errMsg) => {
         );
     }
   });
+  thisVal.path.length = 0;
   return thisVal;
 }
 
@@ -590,7 +591,7 @@ return class ChaningCanvas {
 
     if (
       [ 0, 1 ].includes(arguments.length)
-      && this.path.length
+      && [sx, sy, ex, ey].every(x => x == null)
     ) {
       return processPath(
                this, `${Failed_to_execute} 'fill':`
