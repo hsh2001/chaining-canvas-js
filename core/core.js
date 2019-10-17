@@ -215,7 +215,10 @@ const getTypeErrorMsg = (errMsg, paramIndex, typeName) => (
 */
 const processPath = (thisVal, errMsg) => {
   const ctx = thisVal.ctx;
-  thisVal.path.forEach((pathData, index) => {
+  const path = thisVal.path;
+  thisVal.isPathProcessed = thisVal.isPathProcessed
+                            || path.length;
+  path.forEach((pathData, index) => {
     const type = pathData.type;
     for (let i = 0; i < pathMakerList.length; i++) {
       const name = pathMakerList[i][0];
@@ -235,7 +238,7 @@ const processPath = (thisVal, errMsg) => {
         );
     }
   });
-  thisVal.path.length = 0;
+  path.length = 0;
   return thisVal;
 }
 
@@ -513,6 +516,7 @@ return class ChaningCanvas {
   closePath() {
     this.ctx.closePath();
     this.path.length = 0;
+    this.isPathProcessed = false;
     return this;
   }
 
@@ -584,6 +588,7 @@ return class ChaningCanvas {
   fill(fillStyle, sx, sy, ex, ey) {
     const elem = this.element;
     const ctx = this.ctx;
+    const { width, height } = elem;
 
     fillStyle = isCanvasColor(fillStyle)
                 ? { fillStyle }
@@ -592,6 +597,7 @@ return class ChaningCanvas {
     if (
       [ 0, 1 ].includes(arguments.length)
       && [sx, sy, ex, ey].every(x => x == null)
+      && this.isPathProcessed
     ) {
       return processPath(
                this, `${Failed_to_execute} 'fill':`
@@ -602,8 +608,8 @@ return class ChaningCanvas {
 
     sx = sx || 0;
     sy = sy || 0;
-    ex = ex == null? elem.width : ex;
-    ey = ey == null? elem.height : ey;
+    ex = ex == null? width : ex;
+    ey = ey == null? height : ey;
 
     return this.execute(
       fillStyle,
