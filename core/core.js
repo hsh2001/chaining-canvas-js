@@ -370,6 +370,7 @@ return class ChaningCanvas {
   *  @method
   *  @param {Object} style (optional)
   */
+  setContext(...p) { return this.set(...p); }
   set(style) {
     //  deep-copy style object.
     style = { ...Object(style) };
@@ -386,6 +387,16 @@ return class ChaningCanvas {
     });
 
     Object.assign(this.ctx, style);
+    return this;
+  }
+
+  /**
+  *  @method
+  *  @param {Object} attributes (optional)
+  */
+  setCanvas(attributes) {
+    attributes = Object(attributes);
+    Object.assign(this.element, attributes);
     return this;
   }
 
