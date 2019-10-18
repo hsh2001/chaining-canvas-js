@@ -9,8 +9,8 @@ import {
 import { PI, PI2, numberOrZero } from '../utils/math.js';
 import {
   isCanvasColor,
-  prepareStyle,
-  createPattern,
+  prepareStyle as _prepareStyle,
+  createPattern as _createPattern,
  } from '../utils/canvas.js';
 import { isHTMLElement } from '../utils/html.js';
 import { stringifyNumber } from '../utils/string.js';
@@ -55,18 +55,18 @@ export default class ChaningCanvas {
   *  @param {Object} style
   */
   static prepareStyle(style) {
-    return prepareStyle(style);
+    return _prepareStyle(style);
   }
 
   /**
   *  @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createPattern
   */
   static createPattern(image, repetition) {
-    return createPattern(_ctx, img, repetition);
+    return _createPattern(_ctx, img, repetition);
   }
 
   createPattern(image, repetition) {
-    return createPattern(this.ctx, img, repetition);
+    return _createPattern(this.ctx, img, repetition);
   }
 
   /**
