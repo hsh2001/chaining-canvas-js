@@ -1,249 +1,26 @@
 
-const ChaningCanvas = ((window, document, Array) => {
-
-const PI  = Math.PI;
-const PI2 = PI * 2;
+import { getTypeErrorMsg } from '../utils/error.js';
+import { isArrayLike } from '../utils/array.js';
+import {
+  imgConstructorList, isImage, preloadImage
+} from '../utils/image.js';
+import { PI, PI2, numberOrZero } from '../utils/math.js';
+import {
+  isValidStyleKey, isCanvasColor, prepareStyle
+ } from '../utils/canvas.js';
+import { isHTMLElement } from '../utils/html.js';
+import { stringifyNumber } from '../utils/string.js';
+import { prepareParams } from '../utils/parameter.js';
+import pathMaker from './pathMaker.js';
+import processPath from './pathProcessor.js';
 
 // define private canvas object.
 const _canvas = document.createElement('canvas');
 const _ctx = _canvas.getContext('2d');
 
-// define error message.
-const Failed_to_execute = "Failed to execute";
-
-//  define image object constructor list.
-const imgConstructorList = [
-  "Image",
-  "CSSImageValue",
-  "HTMLImageElement",
-  "SVGImageElement",
-  "HTMLVideoElement",
-  "HTMLCanvasElement",
-  "ImageBitmap",
-  "OffscreenCanvas",
-];
-
-//  define pathMaker.
-/**
-*  @callback PathGenerator
-*  @param {Object} pathMaker
-*    @param {PathMoveTo} pathMaker.moveTo
-*      @callback PathMoveTo
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*    @param {PathLineTo} pathMaker.lineTo
-*      @callback PathLineTo
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*    @param {PathPoint} pathMaker.point
-*      @callback PathPoint
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*    @param {PathArc} pathMaker.arc
-*      @callback PathArc
-*      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/arc
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*      @param {Integer} [r=0]
-*      @param {Float} [sAngle=0]
-*      @param {Float} [eAngle=0]
-*      @param {Boolean} [counterclockwise=false]
-*    @param {PathCircle} pathMaker.circle
-*      @callback PathCircle
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*      @param {Integer} [r=0]
-*    @param {PathQuadraticCurveTo} pathMaker.quadraticCurveTo
-*      @callback PathQuadraticCurveTo
-*      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/quadraticCurveTo
-*      @param {Integer} [cpx=0]
-*      @param {Integer} [cpy=0]
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*    @param {PathBezierCurveTo} pathMaker.bezierCurveTo
-*      @callback PathBezierCurveTo
-*      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/bezierCurveTo
-*      @param {Integer} [cp1x=0]
-*      @param {Integer} [cp1y=0]
-*      @param {Integer} [cp2x=0]
-*      @param {Integer} [cp2y=0]
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*    @param {PathEllipse} pathMaker.ellipse
-*      @callback PathEllipse
-*      @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/ellipse
-*      @param {Integer} [x=0]
-*      @param {Integer} [y=0]
-*      @param {Integer} [radiusX=0]
-*      @param {Integer} [radiusY=0]
-*      @param {Float} [rotation=0]
-*      @param {Float} [sAngle=0]
-*      @param {Float} [eAngle=0]
-*      @param {Boolean} [anticlockwise=false]
-*/
-const pathMaker = {};
-const pathMakerList = [
-  ["moveTo", 2],
-  ["point", 2],
-  ["arc", 6],
-  ["bezierCurveTo", 6],
-  ["quadraticCurveTo", 4],
-  ["ellipse", 8],
-];
-
-//  define methods for pathMaker.
-pathMakerList
-.forEach(([name, argLength]) => {
-  pathMaker[name] = (...params) => ({
-    type: name,
-    params: prepareParams(params, argLength),
-  });
-});
-
-pathMaker.lineTo = pathMaker.point;
-pathMaker.circle = (x, y, r) => {
-  [ x, y, r ] = [ x, y, r ].map(numberOrZero);
-  return [
-    pathMaker.moveTo(x + r, y),
-    pathMaker.arc(x, y, r, 0, PI2),
-  ];
-};
-
-pathMaker.deg = t => 180 * t / PI;
-
-/**
-*  @private
-*  @function
-*  @param {*} key
-*/
-const isValidStyleKey = key => key in _ctx;
-
-/**
-*  @private
-*  @function
-*/
-const numberOrZero = n => (+n || 0);
-
-/**
-*  @private
-*  @function
-*  @param {Array} params
-*  @param {Integer} minLength
-*  @param {Function} [mappingFn=numberOrZero]
-*/
-const prepareParams = (
-  params, minLength, mappingFn
-) => (
-  params
-   .concat(
-     Array(minLength).fill()
-   )
-   .slice(0, minLength)
-   .map(mappingFn || numberOrZero)
-);
-
-/**
-*  @private
-*  @function
-*  @param {*} val
-*/
-const isCanvasColor = val => (
-  typeof val === "string"
-  || val instanceof CanvasGradient
-);
-
-/**
-*  @private
-*  @function
-*  @param {*} val
-*/
-const isImage = val => (
-  val
-  && imgConstructorList.some(
-    key => val instanceof window[key]
-  )
-);
-
-/**
-*  @private
-*  @function
-*  @param {*} val
-*/
-const isArrayLike = val => (
-  val
-  && (
-    Array.isArray(val) || (
-      typeof val.length === 'number' &&
-      val.length > -1
-    )
-  )
-);
-
-/**
-*  @private
-*  @function
-*  @param {*} n
-*/
-const stringifyNumber = n => (
-  n + (['st', 'nd'][n % 10 - 1] || 'th')
-);
-
-/**
-*  @private
-*  @function
-*  @param {*} val
-*/
-const isHTMLElement = val => (
-  val instanceof window.HTMLElement
-);
-
-/**
-*  @private
-*  @function
-*  @param {String} errMsg
-*  @param {Integer} paramIndex
-*  @param {String} typeName
-*/
-const getTypeErrorMsg = (errMsg, paramIndex, typeName) => (
-  `${errMsg} parameter ${paramIndex} is not of type '${typeName}'.`
-);
-
-/**
-*  @private
-*  @method
-*  @param {String} errMsg
-*/
-const processPath = (thisVal, errMsg) => {
-  const ctx = thisVal.ctx;
-  const path = thisVal.path;
-  thisVal.isPathProcessed = thisVal.isPathProcessed
-                            || path.length;
-  path.forEach((pathData, index) => {
-    const type = pathData.type;
-    for (let i = 0; i < pathMakerList.length; i++) {
-      const name = pathMakerList[i][0];
-      if (type === name && ctx[type]) {
-        return ctx[type](...pathData.params);
-      }
-    }
-    switch (type) {
-      case "point":
-        ctx[`${index? "line" : "move"}To`](...pathData.params);
-        break;
-
-      default:
-        thisVal.path.length = 0;
-        throw new TypeError(
-          `${errMsg} ${stringifyNumber(i)} element of path data is Unkwon path type.`
-        );
-    }
-  });
-  path.length = 0;
-  return thisVal;
-}
 
 
-return class ChaningCanvas {
+class ChaningCanvas {
   /**
   *  @constructor
   *  @param {HTMLCanvasElement} canvas
@@ -276,13 +53,7 @@ return class ChaningCanvas {
   *  @param {Object} style
   */
   static prepareStyle(style) {
-    for (let key in style) {
-      if (!isValidStyleKey(key)) {
-        console.warn(`Can't find ${key} is valid style key.`);
-      }
-    }
-
-    return style;
+    return prepareStyle(style);
   }
 
   /**
@@ -293,7 +64,7 @@ return class ChaningCanvas {
     if (!isHTMLElement(parentNode)) {
       throw new TypeError(
         getTypeErrorMsg(
-          `${Failed_to_execute} 'appendInto':`,
+          `Failed to execute 'appendInto':`,
           1,
           "HTMLElement",
         )
@@ -318,11 +89,8 @@ return class ChaningCanvas {
   toImage(format, cb) {
     const element = this.element;
     const img = new Image;
-    const promise = new Promise((resolve, reject) => {
-      img.src = element.toDataURL(format || "image/png");
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-    });
+    const src = element.toDataURL(format || "image/png");
+    const promise = preloadImage(src);
 
     if (typeof cb === "function") {
       promise
@@ -472,7 +240,7 @@ return class ChaningCanvas {
   */
   drawImg(...p) { return this.drawImage(...p); }
   drawImage(img, x, y, ...params) {
-    const errMsg = `${Failed_to_execute} 'drawImage':`;
+    const errMsg = `Failed to execute 'drawImage':`;
 
     if (!isImage(img)) {
       const constList = imgConstructorList.join(' or ');
@@ -537,7 +305,7 @@ return class ChaningCanvas {
   */
   addPath(cb) {
     const ctx = this.ctx;
-    const errMsg = `${Failed_to_execute} 'addPath':`;
+    const errMsg = `Failed to execute 'addPath':`;
     let path;
 
     if (typeof cb !== "function") {
@@ -600,7 +368,7 @@ return class ChaningCanvas {
       && this.isPathProcessed
     ) {
       return processPath(
-               this, `${Failed_to_execute} 'fill':`
+               this, `Failed to execute 'fill':`
              ).execute(
                fillStyle, () => ctx.fill()
              );
@@ -623,14 +391,11 @@ return class ChaningCanvas {
   */
   stroke(style) {
     return processPath(
-            this, `${Failed_to_execute} 'stroke':`
+            this, `Failed to execute 'stroke':`
           ).execute(
             style, thisVal => thisVal.ctx.stroke()
           );
   }
 };
 
-
-
-
-})(this, document, Array);
+export default ChaningCanvas;

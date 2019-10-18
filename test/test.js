@@ -1,3 +1,5 @@
+import ChaningCanvas from '../core/core.js';
+
 const canvas = ChaningCanvas.create({
   id: 'display',
   width: 1000,
@@ -8,6 +10,9 @@ const canvas = ChaningCanvas.create({
 .set({
   strokeStyle: '#fff',
   lineWidth: 10,
+  lineDash: [ 50, 3 ],
+  // scale: [ 2, 2 ],
+  // transform: [ 1, 0.2, 0.8, 1, 0, 0 ],
 })
 .setPath(
   ({point, circle}) => [
