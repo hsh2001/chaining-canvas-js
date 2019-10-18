@@ -9,8 +9,11 @@ import pathMaker from './pathMaker.js';
 export default function processPath(thisVal, errMsg) {
   const ctx = thisVal.ctx;
   const path = thisVal.path;
-  thisVal.isPathProcessed = thisVal.isPathProcessed
-                            || path.length;
+  thisVal.isPathProcessed
+  = !!(
+      thisVal.isPathProcessed
+      || path.length
+    );
   path.forEach((pathData, index) => {
     const type = pathData.type;
     const pathMakerList = pathMaker.list;

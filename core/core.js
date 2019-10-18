@@ -18,9 +18,7 @@ import processPath from './pathProcessor.js';
 const _canvas = document.createElement('canvas');
 const _ctx = _canvas.getContext('2d');
 
-
-
-class ChaningCanvas {
+export default class ChaningCanvas {
   /**
   *  @constructor
   *  @param {HTMLCanvasElement} canvas
@@ -397,5 +395,3 @@ class ChaningCanvas {
           );
   }
 };
-
-export default ChaningCanvas;
