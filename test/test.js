@@ -33,4 +33,5 @@ const canvas = ChaningCanvas.create({
   }
 });
 
+console.dir(ChaningCanvas);
 console.log(canvas);

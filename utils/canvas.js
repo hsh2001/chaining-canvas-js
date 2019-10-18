@@ -1,4 +1,6 @@
 
+import { getTypeErrorMsg } from './error.js';
+
 /**
 *  @private
 *  @function
@@ -13,7 +15,10 @@ const isValidStyleKey = key => key in _ctx;
 */
 const isCanvasColor = val => (
   typeof val === "string"
-  || val instanceof CanvasGradient
+  || [
+    CanvasGradient,
+    CanvasPattern
+  ].some(o => val instanceof o)
 );
 
 const prepareStyle = style => {
@@ -25,4 +30,18 @@ const prepareStyle = style => {
   return style;
 }
 
-export {isValidStyleKey, isCanvasColor, prepareStyle};
+/**
+*  @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createPattern
+*/
+const createPattern = (ctx, image, repetition) => {
+  const errMsg = `Failed to execute 'createPattern':`;
+  if (!isImage(image)) {
+    const constList = imgConstructorList.join(' or ');
+    throw new TypeError(
+      getTypeErrorMsg(errMsg, 1, constList)
+    );
+  }
+  return ctx.createPattern(image, repetition);
+}
+
+export {isValidStyleKey, isCanvasColor, prepareStyle, createPattern};
