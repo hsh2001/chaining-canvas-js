@@ -1,5 +1,5 @@
 
-import { getTypeErrorMsg } from '../utils/error.js';
+import { throwTypeError } from '../utils/error.js';
 import { isArrayLike } from '../utils/array.js';
 import {
   imgConstructorList,
@@ -74,15 +74,12 @@ export default class ChaningCanvas {
   *  @param {HTMLElement} parentNode
   */
   appendInto(parentNode) {
-    if (!isHTMLElement(parentNode)) {
-      throw new TypeError(
-        getTypeErrorMsg(
-          `Failed to execute 'appendInto':`,
-          1,
-          "HTMLElement",
-        )
-      );
-    }
+    isHTMLElement(parentNode)
+    || throwTypeError({
+      prefix: `Failed to execute 'appendInto':`,
+      paramIndex: 1,
+      typeName: "HTMLElement",
+    });
     parentNode.appendChild(this.element);
     return this;
   }
@@ -255,12 +252,11 @@ export default class ChaningCanvas {
   drawImage(img, x, y, ...params) {
     const errMsg = `Failed to execute 'drawImage':`;
 
-    if (!isImage(img)) {
-      const constList = imgConstructorList.join(' or ');
-      throw new TypeError(
-        getTypeErrorMsg(errMsg, 1, constList)
-      );
-    }
+    isImage(img) || throwTypeError({
+      prefix: errMsg,
+      paramIndex: 1,
+      typeName: imgConstructorList.join(' or ')
+    });
 
     x = +x || 0;
     y = +y || 0;
@@ -321,11 +317,11 @@ export default class ChaningCanvas {
     const errMsg = `Failed to execute 'addPath':`;
     let path;
 
-    if (typeof cb !== "function") {
-      throw new TypeError(
-        getTypeErrorMsg(errMsg, 1, "Function")
-      );
-    }
+    (typeof cb === "function") || throwTypeError({
+      prefix: errMsg,
+      paramIndex: 1,
+      typeName: "Function",
+    });
 
     path = cb(pathMaker);
 

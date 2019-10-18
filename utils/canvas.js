@@ -1,5 +1,5 @@
 
-import { getTypeErrorMsg } from './error.js';
+import { throwTypeError } from './error.js';
 
 /**
 *  @private
@@ -35,12 +35,11 @@ const prepareStyle = style => {
 */
 const createPattern = (ctx, image, repetition) => {
   const errMsg = `Failed to execute 'createPattern':`;
-  if (!isImage(image)) {
-    const constList = imgConstructorList.join(' or ');
-    throw new TypeError(
-      getTypeErrorMsg(errMsg, 1, constList)
-    );
-  }
+  isImage(image) || throwTypeError({
+    prefix: errMsg,
+    paramIndex: 1,
+    typeName: imgConstructorList.join(' or ')
+  });
   return ctx.createPattern(image, repetition);
 }
 
