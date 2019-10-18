@@ -2,15 +2,18 @@
 import { getTypeErrorMsg } from '../utils/error.js';
 import { isArrayLike } from '../utils/array.js';
 import {
-  imgConstructorList, isImage, preloadImage
+  imgConstructorList,
+  isImage,
+  preloadImage,
 } from '../utils/image.js';
 import { PI, PI2, numberOrZero } from '../utils/math.js';
 import {
-  isValidStyleKey, isCanvasColor, prepareStyle
+  isCanvasColor,
+  prepareStyle,
  } from '../utils/canvas.js';
 import { isHTMLElement } from '../utils/html.js';
 import { stringifyNumber } from '../utils/string.js';
-import { prepareParams } from '../utils/parameter.js';
+// import { prepareParams } from '../utils/parameter.js';
 import pathMaker from './pathMaker.js';
 import processPath from './pathProcessor.js';
 
